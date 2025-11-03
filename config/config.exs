@@ -11,6 +11,9 @@ config :cheburnet_server,
   ecto_repos: [CheburnetServer.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :cheburnet_server, CheburnetServer.Auth,
+  jwt_secret: System.get_env("JWT_SECRET") || "dev_secret_change_me"
+
 # Configures the endpoint
 config :cheburnet_server, CheburnetServerWeb.Endpoint,
   url: [host: "localhost"],
@@ -59,6 +62,8 @@ config :logger, :default_formatter,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+config :joken, default_signer: System.get_env("JWT_SECRET") || "dev_secret_change_me"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

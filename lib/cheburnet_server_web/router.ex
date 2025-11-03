@@ -20,6 +20,13 @@ defmodule CheburnetServerWeb.Router do
     get "/", PageController, :home
   end
 
+  scope "/api", CheburnetServerWeb do
+    pipe_through :api
+
+    post "/register", AuthController, :register
+    post "/login", AuthController, :login
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", CheburnetServerWeb do
   #   pipe_through :api
