@@ -14,12 +14,6 @@ defmodule CheburnetServerWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", CheburnetServerWeb do
-    pipe_through :browser
-
-    get "/", PageController, :home
-  end
-
   scope "/api", CheburnetServerWeb do
     pipe_through :api
 
