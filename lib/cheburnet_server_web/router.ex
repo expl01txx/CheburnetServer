@@ -23,8 +23,9 @@ defmodule CheburnetServerWeb.Router do
   scope "/api", CheburnetServerWeb do
     pipe_through :api
 
-    post "/register", AuthController, :register
+    get "/ping", BaseController, :ping
     post "/login", AuthController, :login
+    post "/register", AuthController, :register
   end
 
   # Other scopes may use custom stacks.
