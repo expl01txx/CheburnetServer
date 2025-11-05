@@ -30,6 +30,7 @@ defmodule CheburnetServerWeb.Endpoint do
     gzip: not code_reloading?,
     only: CheburnetServerWeb.static_paths()
 
+
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
@@ -54,5 +55,6 @@ defmodule CheburnetServerWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+  plug CORSPlug
   plug CheburnetServerWeb.Router
 end

@@ -18,6 +18,7 @@ defmodule CheburnetServerWeb.Router do
     pipe_through :api
 
     get "/ping", BaseController, :ping
+    get "/user_id", BaseController, :get_user_id
     post "/login", AuthController, :login
     post "/register", AuthController, :register
   end

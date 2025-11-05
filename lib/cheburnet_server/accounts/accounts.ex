@@ -13,6 +13,15 @@ defmodule CheburnetServer.Accounts.Accounts do
     Repo.get_by(User, login: login)
   end
 
+  def get_user_id_by_login(login) do
+    case get_user_by_login(login) do
+      nil ->
+        {:error, :invalid_credentials}
+      %User{} = user ->
+        {:ok, user.id}
+    end
+  end
+
   def authenticate_by_login_password(login, password) do
     case get_user_by_login(login) do
       nil ->
