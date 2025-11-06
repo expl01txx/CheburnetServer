@@ -10,7 +10,7 @@ defmodule CheburnetServerWeb.BaseController do
   def get_user_id(conn, %{"login" => login}) do
     case Accounts.get_user_id_by_login(login) do
       {:ok, user_id} ->
-        json(conn, %{ok: user_id})
+        json(conn, %{id: user_id})
       {:error, _} ->
         json(conn, %{error: "user not found"})
     end

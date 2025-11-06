@@ -1,47 +1,43 @@
 defmodule CheburnetServerWeb.RoomChannel do
   use CheburnetServerWeb, :channel
+  alias CheburnetServere.Rooms
+  alias CheburnetServer.Rooms.RoomAuth
 
   @impl true
-  def join("room:" <> room_id, payload, socket) do
-    IO.puts("Joined room: #{room_id}")
+  def join("room:base", payload, socket) do
+    with {:ok, decoded} <- Jason.decode(payload),
+         {:ok, token} <- Map.fetch(decoded, "token"),
+         {:ok, claims} <- RoomAuth.verify_token(token),
+         {:ok, username} <- Rooms.resolve_username(claims) do
 
-    if authorized?(payload) do
-      socket = assign(socket, :room_id, room_id)
+      socket = assign(socket, :username, username)
       {:ok, socket}
+
     else
-      {:error, %{reason: "unauthorized"}}
+      :error -> {:error, %{reason: "token not provided"}}
+      {:error, reason} -> {:error, %{reason: reason}}
+      _ -> {:error, %{reason: "bad request"}}
     end
-  end
-
-  @impl true
-  def handle_in("ping", payload, socket) do
-    room_id = socket.assigns[:room_id]
-    IO.puts("Received ping in room: #{room_id}")
-    {:reply, {:ok, payload}, socket}
-  end
-
-  @impl true
-  def handle_in("auth", payload, socket) do
-    socket = assign(socket, :username, payload["username"])
-    IO.puts("#{payload["username"]} authorizated")
-    {:noreply, socket}
   end
 
   @impl true
   def handle_in("new_msg", payload, socket) do
-    if (Map.has_key?(socket.assigns, :username)) do
-      IO.puts("#{socket.assigns.username} send #{payload["body"]}")
-      broadcast(socket, "new_msg", %{
-        body: payload["body"]
+    with {:ok, decoded} <- Jason.decode(payload),
+         body when is_binary(body) <- decoded["body"] do
+      broadcast!(socket, "new_msg", %{
+        username: socket.assigns.username,
+        body: body
       })
+
+      {:noreply, socket}
+    else
+      _ -> {:reply, {:error, %{reason: "invalid message"}}, socket}
     end
-    {:noreply, socket}
   end
 
   @impl true
   def terminate(reason, socket) do
-    room_id = socket.assigns[:room_id]
-    IO.puts("Left room: #{room_id} - Reason: #{inspect(reason)}")
+    IO.puts("Left room: #{inspect(reason)}")
     :ok
   end
 
