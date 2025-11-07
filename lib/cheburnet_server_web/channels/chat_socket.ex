@@ -34,11 +34,10 @@ defmodule CheburnetServerWeb.ChatSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  channel "room:*", CheburnetServerWeb.RoomChannel
+  channel "user:*", CheburnetServerWeb.RoomChannel
 
   @impl true
   def connect(_params, socket, _connect_info) do
-    IO.puts("XXXX")
     {:ok, socket}
   end
 

@@ -5,4 +5,12 @@ defmodule CheburnetServere.Rooms do
       username -> {:ok, username}
     end
   end
+
+  def verify_id(id, claims) do
+    if claims["sub"] == id do
+      {:ok}
+    else
+      {:error, "token id and user id are not equal"}
+    end
+  end
 end
