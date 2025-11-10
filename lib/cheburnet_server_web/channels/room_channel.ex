@@ -32,12 +32,8 @@ defmodule CheburnetServerWeb.RoomChannel do
   end
 
   @impl true
-  def terminate(reason, socket) do
+  def terminate(reason, _) do
     IO.puts("Left room: #{inspect(reason)}")
     :ok
-  end
-
-  defp authorized?(_payload) do
-    true
   end
 end

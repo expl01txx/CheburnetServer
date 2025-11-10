@@ -1,7 +1,6 @@
 defmodule CheburnetServer.Accounts.Accounts do
   alias CheburnetServer.Repo
   alias CheburnetServer.Accounts.User
-  import Ecto.Query, only: [from: 2]
 
   def register_user(attrs) do
     %User{}

@@ -20,6 +20,22 @@ if System.get_env("PHX_SERVER") do
   config :cheburnet_server, CheburnetServerWeb.Endpoint, server: true
 end
 
+if config_env() == :dev do
+  config :cheburnet_server, CheburnetServer.Repo,
+    username: System.get_env("POSTGRES_USER") || "postgres",
+    password: System.get_env("POSTGRES_PASSWORD") || "postgres",
+    hostname: System.get_env("POSTGRES_HOST") || "db",
+    database: System.get_env("POSTGRES_DB") || "cheburnet_server_dev",
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    ssl: false
+
+  config :cheburnet_server, CheburnetServerWeb.Endpoint,
+    http: [port: String.to_integer(System.get_env("PORT") || "4000")],
+    secret_key_base: System.get_env("SECRET_KEY_BASE") || "CHANGE_ME",
+    server: true
+end
+
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

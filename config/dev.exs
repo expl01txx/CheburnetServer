@@ -2,8 +2,8 @@ import Config
 
 # Configure your database
 config :cheburnet_server, CheburnetServer.Repo,
-  username: "admin",
-  password: "admin",
+  username: "postgres",
+  password: "postgres",
   hostname: "localhost",
   database: "cheburnet_server_dev",
   stacktrace: true,
