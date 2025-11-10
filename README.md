@@ -1,15 +1,23 @@
-# CheburnetServer
+## CheburnetServer - provides backend for auth, messaging and API for Cheburnet messenger project.
 
-To start your Phoenix server:
+### Dependencies:
+* postgres 14
+* erlang-otp 28
+* elixir 1.92.2
 
-* Run `mix setup` to install and setup dependencies
-* Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+### To start your server (dev mode):
+#### Using host:
+* Install dependencies
+* Configure postgres
+* Change `config/dev.exs` config to match postgres configuration
+* run `mix setup`
+* start server using `mix phx.server`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+#### Using docker:
+* Run `./run_dev.sh` to build docker image, install and setup dependencies and start server in dev mode
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
-## Learn more
+### Learn more
 
 * Official website: https://www.phoenixframework.org/
 * Guides: https://hexdocs.pm/phoenix/overview.html
