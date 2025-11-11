@@ -20,6 +20,9 @@ if System.get_env("PHX_SERVER") do
   config :cheburnet_server, CheburnetServerWeb.Endpoint, server: true
 end
 
+config :cheburnet_server, CheburnetServer.Redis,
+  host: System.get_env("REDIS_HOST", "localhost")
+
 if config_env() == :dev do
   config :cheburnet_server, CheburnetServer.Repo,
     username: System.get_env("POSTGRES_USER") || "postgres",
@@ -34,7 +37,6 @@ if config_env() == :dev do
     secret_key_base: System.get_env("SECRET_KEY_BASE") || "CHANGE_ME",
     server: true
 end
-
 
 if config_env() == :prod do
   database_url =

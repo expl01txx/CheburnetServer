@@ -7,6 +7,9 @@ defmodule CheburnetServer.Application do
 
   @impl true
   def start(_type, _args) do
+    redis_config = Application.get_env(:cheburnet_server, CheburnetServer.Redis, [])
+    host = Keyword.get(redis_config, :host, "localhost")
+
     children = [
       CheburnetServer.Repo,
       {DNSCluster, query: Application.get_env(:cheburnet_server, :dns_cluster_query) || :ignore},
@@ -14,6 +17,8 @@ defmodule CheburnetServer.Application do
       # Start a worker by calling: CheburnetServer.Worker.start_link(arg)
       # {CheburnetServer.Worker, arg},
       # Start to serve requests, typically the last entry
+      {Redix, name: :redis, host: host, port: 6379},
+      {Cachex, name: :local_cache},
       CheburnetServerWeb.Endpoint
     ]
 

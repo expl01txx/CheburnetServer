@@ -69,6 +69,8 @@ defmodule CheburnetServer.MixProject do
       {:argon2_elixir, "~> 4.1.3"},
       {:joken, "~> 2.6"},
       {:cors_plug, "~> 3.0"},
+      {:redix, "~> 1.5.2"},
+      {:cachex, "~> 4.0.0"}
     ]
   end
 

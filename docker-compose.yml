@@ -11,24 +11,42 @@ services:
       POSTGRES_DB: cheburnet_server_dev
     volumes:
       - db_data:/var/lib/postgresql/data
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/data
 
   web:
     build: .
     container_name: cheburnet_server
     depends_on:
       - db
+      - redis
     environment:
-      MIX_ENV: prod
+      MIX_ENV: dev
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_HOST: db
       POSTGRES_DB: cheburnet_server_dev
       DATABASE_URL: ecto://postgres:postgres@db/cheburnet_server_dev
+      REDIS_HOST: redis
       SECRET_KEY_BASE: "CHANGE_ME"
       PHX_SERVER: "true"
     ports:
       - "4000:4000"
-    command: ["mix", "phx.server"]
+    volumes:
+      - .:/app
+    command: >
+      sh -c "
+        mix deps.get
+        mix deps.compile
+        mix ecto.create &&
+        mix ecto.migrate &&
+        mix phx.server
+      "
     restart: always
 
 volumes:
