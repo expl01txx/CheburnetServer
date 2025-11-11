@@ -11,13 +11,14 @@ defmodule CheburnetServerWeb.RoomChannel do
     with {:ok, token} <- Map.fetch(payload, "token"),
          {:ok, claims} <- RoomAuth.verify_token(token),
          {:ok, username} <- Rooms.resolve_username(claims),
-         {:ok} <- Rooms.verify_id(id, claims) do
+         {:ok} <- Rooms.verify_id(id, claims),
+         {user_id, _} <- Integer.parse(id, 10) do
       socket = assign(socket, :username, username)
-      socket = assign(socket, :user_id, id)
+      socket = assign(socket, :user_id, user_id)
       send(self(), :after_join)
       {:ok, socket}
     else
-      :error -> {:error, %{reason: "token not provided"}}
+      :error -> {:error, %{reason: "bad request"}}
       {:error, reason} -> {:error, %{reason: reason}}
       _ -> {:error, %{reason: "bad request"}}
     end
@@ -26,7 +27,8 @@ defmodule CheburnetServerWeb.RoomChannel do
   @impl true
   def handle_in("new_msg", payload, socket) do
     with body when is_binary(body) <- payload["body"],
-         user_id <- payload["user_id"] do
+         user_id <- payload["user_id"],
+         true <- user_id != socket.assigns[:user_id] do
       topic = "user:#{user_id}"
 
       if Presence.list(topic) |> map_size() > 0 do
@@ -45,6 +47,7 @@ defmodule CheburnetServerWeb.RoomChannel do
         {:reply, {:ok, %{info: "User offline, message stored"}}, socket}
       end
     else
+      false -> {:reply, {:error, %{reason: "cannot send message to yourself"}}, socket}
       _ -> {:reply, {:error, %{reason: "invalid message"}}, socket}
     end
   end
