@@ -19,7 +19,8 @@ defmodule CheburnetServer.Application do
       # Start to serve requests, typically the last entry
       {Redix, name: :redis, host: host, port: 6379},
       {Cachex, name: :local_cache},
-      CheburnetServerWeb.Endpoint
+      CheburnetServerWeb.Endpoint,
+      CheburnetServerWeb.Presence
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
