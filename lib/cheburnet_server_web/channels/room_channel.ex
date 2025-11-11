@@ -1,7 +1,7 @@
 defmodule CheburnetServerWeb.RoomChannel do
   use CheburnetServerWeb, :channel
   alias Ecto.UUID
-  alias CheburnetServere.Rooms
+  alias CheburnetServer.Rooms
   alias CheburnetServer.Rooms.RoomAuth
   alias CheburnetServer.Messages
   alias CheburnetServerWeb.Presence
@@ -28,7 +28,7 @@ defmodule CheburnetServerWeb.RoomChannel do
   def handle_in("new_msg", payload, socket) do
     with body when is_binary(body) <- payload["body"],
          user_id <- payload["user_id"],
-         true <- user_id != socket.assigns[:user_id] do
+         {:ok, user_id} <- Rooms.validate_user_id(user_id, socket.assigns[:user_id]) do
       topic = "user:#{user_id}"
 
       if Presence.list(topic) |> map_size() > 0 do
@@ -47,8 +47,17 @@ defmodule CheburnetServerWeb.RoomChannel do
         {:reply, {:ok, %{info: "User offline, message stored"}}, socket}
       end
     else
-      false -> {:reply, {:error, %{reason: "cannot send message to yourself"}}, socket}
-      _ -> {:reply, {:error, %{reason: "invalid message"}}, socket}
+      {:error, :not_binary} ->
+        {:reply, {:error, %{reason: "message body must be a string"}}, socket}
+
+      {:error, :invalid_user_id} ->
+        {:reply, {:error, %{reason: "user_id must be an integer"}}, socket}
+
+      {:error, :self_message} ->
+        {:reply, {:error, %{reason: "cannot send message to yourself"}}, socket}
+
+      _ ->
+        {:reply, {:error, %{reason: "invalid message"}}, socket}
     end
   end
 
@@ -68,8 +77,7 @@ defmodule CheburnetServerWeb.RoomChannel do
   end
 
   @impl true
-  def terminate(reason, _) do
-    IO.puts("Left room: #{inspect(reason)}")
+  def terminate(_, _) do
     :ok
   end
 end
