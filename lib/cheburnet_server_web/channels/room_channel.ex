@@ -40,7 +40,7 @@ defmodule CheburnetServerWeb.RoomChannel do
         {:noreply, socket}
       else
         Messages.store_message(user_id, UUID.generate(), %{
-          msg: body,
+          body: body,
           user_id: socket.assigns[:user_id]
         })
 
