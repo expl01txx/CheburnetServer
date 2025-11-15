@@ -3,7 +3,8 @@ defmodule CheburnetServer.Messages do
   @redis :redis
 
   def store_message(user_id, msg_id, payload) do
-    key = "message:#{user_id}:#{msg_id}"
+    ts = System.system_time(:millisecond)
+    key = "message:#{user_id}:#{ts}:#{msg_id}"
     value = Jason.encode!(payload)
 
     Redix.command!(@redis, ["SETEX", key, @ttl, value])
@@ -13,6 +14,7 @@ defmodule CheburnetServer.Messages do
     {:ok, keys} = Redix.command(@redis, ["KEYS", "message:#{user_id}:*"])
 
     keys
+    |> Enum.sort()
     |> Enum.map(fn key ->
       case Redix.pipeline(@redis, [["GET", key], ["DEL", key]]) do
         {:ok, [val, _]} ->
