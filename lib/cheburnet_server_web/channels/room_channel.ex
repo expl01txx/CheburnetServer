@@ -43,8 +43,7 @@ defmodule CheburnetServerWeb.RoomChannel do
           body: body,
           user_id: socket.assigns[:user_id]
         })
-
-        {:reply, {:ok, %{info: "User offline, message stored"}}, socket}
+        {:noreply, socket}
       end
     else
       {:error, :not_binary} ->
